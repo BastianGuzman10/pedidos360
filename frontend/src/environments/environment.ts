@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   authEnabled: false,
-  apiUrl: 'http://localhost:8080/api',
+  apiUrl: '/api',
   msal: {
     clientId: 'PLACEHOLDER_FRONTEND_CLIENT_ID',
     authority: 'https://login.microsoftonline.com/PLACEHOLDER_TENANT_ID',
