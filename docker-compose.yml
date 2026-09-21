@@ -1,0 +1,40 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pedidos360
+      SPRING_DATASOURCE_USERNAME: pedidos360
+      SPRING_DATASOURCE_PASSWORD: pedidos360_local_only
+      SPRING_DATASOURCE_DRIVER: org.postgresql.Driver
+      AUTH_ENABLED: ${AUTH_ENABLED:-false}
+      OAUTH2_ISSUER_URI: ${OAUTH2_ISSUER_URI:-}
+      OAUTH2_AUDIENCE: ${OAUTH2_AUDIENCE:-PLACEHOLDER_API_CLIENT_ID}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200,http://localhost:8081}
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pedidos360
+      POSTGRES_USER: pedidos360
+      POSTGRES_PASSWORD: pedidos360_local_only
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pedidos360 -d pedidos360"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        ANGULAR_CONFIGURATION: development
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend

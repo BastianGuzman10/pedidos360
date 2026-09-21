@@ -1,0 +1,31 @@
+# secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# Angular / Node
+node_modules/
+dist/
+.angular/
+.cache/
+coverage/
+
+# Java / Maven
+target/
+.mvn/
+*.class
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/settings.json
+.vscode/*.json
+!/.vscode/extensions.json
+
+# local tooling
+.tools/
