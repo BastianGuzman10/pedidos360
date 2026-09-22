@@ -1,6 +1,7 @@
 services:
   backend:
     build: ./backend
+    restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
@@ -18,18 +19,18 @@ services:
         condition: service_healthy
   postgres:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_DB: pedidos360
       POSTGRES_USER: pedidos360
       POSTGRES_PASSWORD: pedidos360_local_only
-    ports:
-      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pedidos360 -d pedidos360"]
       interval: 5s
       timeout: 5s
       retries: 10
   frontend:
+    restart: unless-stopped
     build:
       context: ./frontend
       args:

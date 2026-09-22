@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, Injector, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MsalService } from '@azure/msal-angular';
@@ -10,7 +10,7 @@ import { environment } from '../environments/environment';
 @Component({ selector: 'app-root', standalone: true, imports: [CommonModule, FormsModule], templateUrl: './app.component.html', styleUrl: './app.component.scss' })
 export class AppComponent implements OnInit {
   private api = inject(ApiService);
-  private auth = inject(MsalService);
+  private injector = inject(Injector);
   readonly authEnabled = environment.authEnabled;
   account?: AccountInfo;
   tab = 'inicio'; loading = false; error = ''; success = '';
@@ -20,17 +20,18 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     if (!this.authEnabled) { this.loadProducts(); this.loadOrders(); return; }
-    this.auth.instance.initialize()
-      .then(() => this.auth.instance.handleRedirectPromise())
+    const auth = this.injector.get(MsalService);
+    auth.instance.initialize()
+      .then(() => auth.instance.handleRedirectPromise())
       .then(result => {
-        this.account = result?.account ?? this.auth.instance.getActiveAccount() ?? this.auth.instance.getAllAccounts()[0];
-        if (this.account) { this.auth.instance.setActiveAccount(this.account); this.loadProducts(); this.loadOrders(); }
+        this.account = result?.account ?? auth.instance.getActiveAccount() ?? auth.instance.getAllAccounts()[0];
+        if (this.account) { auth.instance.setActiveAccount(this.account); this.loadProducts(); this.loadOrders(); }
       })
       .catch(() => this.error = 'No fue posible inicializar Microsoft Entra ID. Revisa la configuracion.');
   }
 
-  login() { if (this.authEnabled) this.auth.loginRedirect({ scopes: ['openid', 'profile', environment.msal.apiScope] }); }
-  logout() { if (this.authEnabled) this.auth.logoutRedirect(); }
+  login() { if (this.authEnabled) this.injector.get(MsalService).loginRedirect({ scopes: ['openid', 'profile', environment.msal.apiScope] }); }
+  logout() { if (this.authEnabled) this.injector.get(MsalService).logoutRedirect(); }
   setTab(tab: string) { this.tab = tab; this.error = ''; this.success = ''; }
   loadProducts() { this.api.productos().subscribe({ next: data => this.productos = data, error: e => this.showError(e) }); }
   loadOrders() { this.api.pedidos().subscribe({ next: data => this.pedidos = data, error: e => this.showError(e) }); }
