@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: notification-service
+
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:pedidos360}
+    password: ${SPRING_RABBITMQ_PASSWORD:pedidos360_rabbit_local}
+
+    listener:
+      simple:
+        default-requeue-rejected: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+server:
+  port: 8082
