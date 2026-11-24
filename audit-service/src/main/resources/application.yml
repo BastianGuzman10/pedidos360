@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: audit-service
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${KAFKA_AUDIT_GROUP:pedidos-auditoria}
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.pedidos360.*
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.pedidos360.audit.model.PedidoKafkaEvent
+    listener:
+      ack-mode: record
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+server:
+  port: 8084
+app:
+  kafka:
+    auditoria-topic: ${KAFKA_AUDITORIA_TOPIC:pedidos.auditoria}

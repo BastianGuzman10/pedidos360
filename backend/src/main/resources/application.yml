@@ -10,6 +10,23 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      acks: all
+      retries: 3
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        max.block.ms: 5000
+        delivery.timeout.ms: 10000
+        request.timeout.ms: 5000
+    admin:
+      auto-create: true
+      fail-fast: false
+      operation-timeout: 5s
   h2:
     console:
       enabled: ${H2_CONSOLE_ENABLED:false}
@@ -25,6 +42,9 @@ app:
     audience: ${OAUTH2_AUDIENCE:PLACEHOLDER_API_CLIENT_ID}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
+  kafka:
+    pedidos-topic: ${KAFKA_PEDIDOS_TOPIC:pedidos.eventos}
+    auditoria-topic: ${KAFKA_AUDITORIA_TOPIC:pedidos.auditoria}
 server:
   port: ${PORT:8080}
   error:

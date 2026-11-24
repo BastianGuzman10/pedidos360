@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: reporting-service
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${KAFKA_REPORTING_GROUP:pedidos-reporteria}
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.pedidos360.*
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.pedidos360.reporting.model.PedidoKafkaEvent
+    listener:
+      ack-mode: record
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+server:
+  port: 8083
+app:
+  kafka:
+    pedidos-topic: ${KAFKA_PEDIDOS_TOPIC:pedidos.eventos}
